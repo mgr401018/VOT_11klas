@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Manager</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>Data Manager</h1>
+
+    <section id="add-data">
+        <h2>Add Data</h2>
+        <form id="add-form">
+            <label for="integer">Integer:</label>
+            <input type="number" id="integer" name="integer" required>
+            <label for="string">String:</label>
+            <input type="text" id="string" name="string" required>
+            <button type="submit">Add</button>
+        </form>
+        <p id="add-message"></p>
+    </section>
+
+    <section id="search-data">
+        <h2>Search Data</h2>
+        <form id="search-form">
+            <label for="search-integer">Integer:</label>
+            <input type="number" id="search-integer" name="search-integer" required>
+            <button type="submit">Search</button>
+        </form>
+        <p id="search-result"></p>
+    </section>
+
+    <section id="update-data">
+        <h2>Update Data</h2>
+        <form id="update-form">
+            <label for="update-integer">Integer:</label>
+            <input type="number" id="update-integer" name="update-integer" required>
+            <label for="update-string">New String:</label>
+            <input type="text" id="update-string" name="update-string" required>
+            <button type="submit">Update</button>
+        </form>
+        <p id="update-message"></p>
+    </section>
+
+    <script>
+        document.getElementById("add-form").addEventListener("submit", async function (event) {
+            event.preventDefault();
+            const integer = document.getElementById("integer").value;
+            const string = document.getElementById("string").value;
+            const response = await fetch("/add", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ integer: integer, string: string })
+            });
+            const result = await response.json();
+            document.getElementById("add-message").textContent = result.message || result.error;
+        });
+
+        document.getElementById("search-form").addEventListener("submit", async function (event) {
+            event.preventDefault();
+            const integer = document.getElementById("search-integer").value;
+            const response = await fetch(`/search?integer=${integer}`);
+            const result = await response.json();
+            document.getElementById("search-result").textContent = result.string || result.message || result.error;
+        });
+
+        document.getElementById("update-form").addEventListener("submit", async function (event) {
+            event.preventDefault();
+            const integer = document.getElementById("update-integer").value;
+            const newString = document.getElementById("update-string").value;
+            const response = await fetch("/update", {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ integer: integer, string: newString })
+            });
+            const result = await response.json();
+            document.getElementById("update-message").textContent = result.message || result.error;
+        });
+    </script>
+</body>
+</html>
